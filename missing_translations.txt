@@ -1,0 +1,14 @@
+{
+  "zh": [
+    "objectDetectionReady",
+    "switchCameraLabel",
+    "captureButtonLabel",
+    "captureButtonHint",
+    "captureAndDetect",
+    "capturingImage",
+    "processingImage",
+    "noObjectsFound",
+    "errorProcessing",
+    "objectDetectedFound"
+  ]
+}
