@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "586829411860",
+    "project_id": "virtual-eye-ankit-2025",
+    "storage_bucket": "virtual-eye-ankit-2025.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:586829411860:android:74e9c9b85d559704161901",
+        "android_client_info": {
+          "package_name": "com.virtual.eye"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDMNPZ6MA-GY9Hzsu9Xq4Cp86kbFq6tHnk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

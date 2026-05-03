@@ -1,0 +1,70 @@
+{
+  "@@locale": "en",
+
+  "home": "Home",
+  "virtualEye": "Virtual Eye",
+  "services": "Services",
+  "language": "Language",
+  "logOut": "Log Out",
+  "colorDetector": "Color Detector",
+
+  "welcomeMessage": "Welcome to our app. Tap anywhere to give a command. You have to say 'open' before the option of object detection, chatbot, map, services, music, logout. Example: open chatbot.",
+  "headingDetail": "Tap anywhere to give a command, such as 'open object detection' or 'open map'",
+  "holdScreenMessage": "Hold the screen to ask a question.",
+  "listening": "Listening...",
+  "recordingStopped": "Recording stopped.",
+
+  "objectDetection": "Object Detection",
+  "realTimeObjectDetection": "Real-time Object Detection",
+  "map": "Map",
+  "chatbot": "Chatbot",
+  "call": "Call",
+
+  "police": "Police",
+  "fireDepartment": "Fire Department",
+  "ambulance": "Ambulance",
+  "ngo": "NGO",
+  "welcomeToServices": "Welcome to services.",
+
+  "selectLanguage": "Select Language",
+  "changeLanguage": "Change Language",
+
+  "voiceAssistantChatbot": "Voice Assistant Chatbot",
+  "aiChatbot": "AI Chatbot",
+  "smartAssistantChatbot": "I am a smart assistant chatbot",
+
+  "chatbotTitle": "Virtual Eye Assistant",
+  "userSaid": "You said",
+  "aiSaid": "Virtual Eye said",
+  "aiTypingLabel": "Virtual Eye is typing...",
+  "chatInputHint": "Type your message...",
+  "sendButtonLabel": "Send message",
+
+  "confirmLogout": "Confirm Logout",
+  "logoutConfirmationMessage": "Are you sure you want to log out?",
+  "no": "No",
+  "yes": "Yes",
+
+  "internetOffMessage": "Looks like you are not connected to the internet.",
+  "turnOnInternet": "Turn on internet",
+  "phoneDialerError": "Could not launch phone dialer",
+
+  "voiceCommandOpenMusic": "open music",
+  "ttsOpeningMusic": "Opening your music player.",
+  "objectDetectionReady": "Object detection is ready. Tap anywhere on the screen to capture and detect objects.",
+  "switchCameraLabel": "Switch Camera",
+  "captureButtonLabel": "Take Photo",
+  "captureButtonHint": "Double tap to take a photo and detect objects",
+  "captureAndDetect": "Capture & Detect",
+  "capturingImage": "Taking photo...",
+  "processingImage": "Processing image...",
+  "noObjectsFound": "No objects detected. Please try pointing the camera at a different object.",
+  "errorProcessing": "Sorry, there was a problem detecting objects. Please try again.",
+  "objectDetectedFound": "I see {label} with confidence {confidence} percent.",
+  "@objectDetectedFound": {
+    "placeholders": {
+      "label": {"type": "String"},
+      "confidence": {"type": "int"}
+    }
+  }
+}

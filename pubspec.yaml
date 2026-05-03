@@ -1,0 +1,74 @@
+name: virtual_eye
+description: "A cross-platform app for the visually impaired."
+publish_to: 'none'
+
+version: 1.0.3+11
+
+environment:
+  sdk: '>=3.4.3 <4.0.0'
+
+dependencies:
+  # Flutter & Core
+  flutter:
+    sdk: flutter
+  # CHANGED: Removed the invalid google_mlkit_object_detection nesting from here.
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.0
+
+  # Utilities
+  palette_generator: ^0.3.3
+  image_picker: ^1.0.7
+
+  # Firebase & Cloud
+  firebase_core: ^3.1.0
+  cloud_firestore: ^5.0.1
+  firebase_auth: ^5.1.0
+  firebase_database: ^11.0.1
+  google_generative_ai: ^0.4.7
+
+  # Device Features
+  camera: ^0.11.0+2
+  # location: ^7.0.0
+  url_launcher: ^6.3.0
+  flutter_tts: ^4.0.2
+  speech_to_text: ^7.0.0
+  local_auth: ^2.3.0
+  connectivity_plus: ^6.0.3
+
+  # AI & ML
+#  tflite_flutter: ^0.13.1
+  image: ^4.2.0
+
+  # UI & Maps
+  cupertino_icons: ^1.0.6
+  google_maps_flutter: ^2.9.0
+  custom_info_window: ^1.0.1
+  flutter_svg: ^2.1.0
+
+  # State Management & Utils
+  flutter_riverpod: ^2.5.1
+  permission_handler: ^11.3.1
+  # CHANGED: Kept the latest version declaration here as the sole source of truth.
+  google_mlkit_image_labeling: ^0.12.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_launcher_icons: ^0.14.3
+  flutter_lints: ^4.0.0
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "images/app_logo.png"
+
+# THIS MUST BE AT THE ROOT LEVEL (No indentation)
+flutter:
+  uses-material-design: true
+  generate: true
+
+  assets:
+    - images/
+    - assets/detect.tflite
+    - assets/labelmap.txt
