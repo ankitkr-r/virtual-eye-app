@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -21,8 +22,6 @@ class _MLKitObjectDetectionState extends State<MLKitObjectDetection> {
 
   bool _isDetecting = false;
   bool _isDisposed = false;
-
-  late ImageLabeler _imageLabeler;
 
   // ── Locale → TTS language code map ──────────────────────────────────────
   static const Map<String, String> _localeToTtsLang = {
@@ -48,39 +47,21 @@ class _MLKitObjectDetectionState extends State<MLKitObjectDetection> {
     'ru': 'ru-RU',
   };
 
-  // Labels that represent a human — catches all ML Kit variants
   static const Set<String> _humanLabels = {
-    'person',
-    'human',
-    'man',
-    'woman',
-    'boy',
-    'girl',
-    'child',
-    'people',
-    'face',
-    'body',
-    'pedestrian',
-    'selfie',
-    'portrait',
+    'person', 'human', 'man', 'woman', 'boy', 'girl',
+    'child', 'people', 'face', 'body', 'pedestrian',
+    'selfie', 'portrait',
   };
 
   @override
   void initState() {
     super.initState();
-
-    // Use a lower confidence threshold so human labels aren't filtered out
-    final options = ImageLabelerOptions(confidenceThreshold: 0.5);
-    _imageLabeler = ImageLabeler(options: options);
-
     initializeCamera(null);
-    // TTS is initialized after first build so we can read the locale
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Re-init TTS whenever locale changes (called on first build too)
     _initializeTts();
   }
 
@@ -89,7 +70,6 @@ class _MLKitObjectDetectionState extends State<MLKitObjectDetection> {
     _isDisposed = true;
     _controller?.dispose();
     flutterTts.stop();
-    _imageLabeler.close();
     super.dispose();
   }
 
@@ -144,11 +124,9 @@ class _MLKitObjectDetectionState extends State<MLKitObjectDetection> {
     }
   }
 
-  /// Normalise a raw ML Kit label so human variants are unified.
   String _normaliseLabel(String raw) {
     final lower = raw.toLowerCase().trim();
-    if (_humanLabels.contains(lower)) return 'Person'; // ← unified human label
-    // Capitalise first letter for natural speech
+    if (_humanLabels.contains(lower)) return 'Person';
     return raw[0].toUpperCase() + raw.substring(1);
   }
 
@@ -160,11 +138,8 @@ class _MLKitObjectDetectionState extends State<MLKitObjectDetection> {
     }
 
     final l10n = AppLocalizations.of(context)!;
-
-    // Re-apply TTS language in case user switched locale mid-session
     final locale = Localizations.localeOf(context).languageCode;
-    final ttsLang = _localeToTtsLang[locale] ?? 'en-IN';
-    await flutterTts.setLanguage(ttsLang);
+    await flutterTts.setLanguage(_localeToTtsLang[locale] ?? 'en-IN');
 
     setState(() => _isDetecting = true);
 
@@ -175,14 +150,12 @@ class _MLKitObjectDetectionState extends State<MLKitObjectDetection> {
 
       await flutterTts.speak(l10n.processingImage);
 
-      final inputImage = InputImage.fromFilePath(photo.path);
-      final List<ImageLabel> labels =
-      await _imageLabeler.processImage(inputImage);
+      // 🔥 THE MAGIC HAPPENS HERE: We send the photo to the background Chef!
+      final List<ImageLabel> labels = await DetectionIsolate.processImageInIsolate(photo.path);
 
       if (_isDisposed || !mounted) return;
 
       if (labels.isNotEmpty) {
-        // De-duplicate after normalisation (e.g. "Man" + "Person" → one "Person")
         final seen = <String>{};
         final foundLabels = <String>[];
         int highestConfidence = 0;
@@ -219,15 +192,13 @@ class _MLKitObjectDetectionState extends State<MLKitObjectDetection> {
 
     if (_controller == null || !_controller!.value.isInitialized) {
       return Scaffold(
-        appBar:
-        AppBar(title: Text(localizations?.objectDetection ?? "Detection")),
+        appBar: AppBar(title: Text(localizations?.objectDetection ?? "Detection")),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     return Scaffold(
-      appBar:
-      AppBar(title: Text(localizations?.objectDetection ?? "Detection")),
+      appBar: AppBar(title: Text(localizations?.objectDetection ?? "Detection")),
       body: GestureDetector(
         onTap: _isDetecting ? null : _captureAndDetect,
         child: Stack(
@@ -249,14 +220,12 @@ class _MLKitObjectDetectionState extends State<MLKitObjectDetection> {
               right: 20,
               child: Semantics(
                 button: true,
-                label:
-                localizations?.switchCameraLabel ?? "Switch Camera",
+                label: localizations?.switchCameraLabel ?? "Switch Camera",
                 child: FloatingActionButton(
                   heroTag: "switch_cam",
                   mini: true,
                   onPressed: toggleCamera,
-                  child:
-                  const Icon(Icons.flip_camera_ios, semanticLabel: null),
+                  child: const Icon(Icons.flip_camera_ios, semanticLabel: null),
                 ),
               ),
             ),
@@ -264,5 +233,31 @@ class _MLKitObjectDetectionState extends State<MLKitObjectDetection> {
         ),
       ),
     );
+  }
+}
+
+// ──────────────────────────────────────────────────────────────────────────
+// 🧠 THE BACKGROUND WORKER (THE CHEF)
+// ──────────────────────────────────────────────────────────────────────────
+class DetectionIsolate {
+  static Future<List<ImageLabel>> processImageInIsolate(String imagePath) async {
+    // compute() spawns a background thread so the UI doesn't freeze
+    return await compute(_heavyObjectDetection, imagePath);
+  }
+
+  static Future<List<ImageLabel>> _heavyObjectDetection(String imagePath) async {
+    final options = ImageLabelerOptions(confidenceThreshold: 0.5);
+    final imageLabeler = ImageLabeler(options: options);
+
+    try {
+      final inputImage = InputImage.fromFilePath(imagePath);
+      // This heavy math happens off the main thread now
+      return await imageLabeler.processImage(inputImage);
+    } catch (e) {
+      debugPrint("Background Thread Error: $e");
+      return [];
+    } finally {
+      imageLabeler.close(); // Clean up memory
+    }
   }
 }

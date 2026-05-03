@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart'; // Added only this import
 import 'package:virtual_eye/splash_page/splash_screen.dart';
 import 'package:virtual_eye/l10n/app_localizations.dart';
 
@@ -15,6 +16,9 @@ final ValueNotifier<Locale> localeNotifier = ValueNotifier(const Locale('en'));
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Added only this line to load your hidden Gemini key securely
+  await dotenv.load(fileName: ".env");
 
   if (kIsWeb) {
     await Firebase.initializeApp(

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart'; // 🔥 1. Added dotenv import
 
 // 1. A simple class to hold our message data
 class ChatModel {
@@ -12,8 +13,7 @@ class ChatModel {
 
 // 2. The ViewModel that manages State and connects to Gemini
 class ChatViewModel extends ChangeNotifier {
-  // ⚠️ TEMPORARY: Put your free API key from Google AI Studio here
-  static const String _apiKey = 'AIzaSyAHOpubw8PpT-mQU2OMl61rQ0H6VhHOwHw';
+  // ⚠️ Notice: The hardcoded _apiKey line has been completely removed!
 
   late final GenerativeModel _model;
   late final ChatSession _chatSession;
@@ -24,10 +24,13 @@ class ChatViewModel extends ChangeNotifier {
   StreamSubscription<GenerateContentResponse>? _chatSubscription;
 
   ChatViewModel() {
+    // 🔥 2. We securely grab the key from your hidden .env file right here
+    final String apiKey = dotenv.env['GEMINI_API_KEY'] ?? '';
+
     // Upgraded to Gemini 2.5 Flash for the fastest response times
     _model = GenerativeModel(
       model: 'gemini-2.5-flash',
-      apiKey: _apiKey,
+      apiKey: apiKey, // 🔥 3. Pass the secure variable here
     );
     // FIX: Properly initialize the chat session so it remembers conversation history and doesn't crash!
     _chatSession = _model.startChat();
